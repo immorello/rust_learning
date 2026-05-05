@@ -1,8 +1,7 @@
-use core::num;
-
-use rand::{Rng, RngExt};
+use rand::{ RngExt};
 pub enum Choice{
     AddTask,
+    ListTasks,
     ShowTask,
     CompleteTask,
     DeleteTask,
@@ -33,10 +32,18 @@ impl TodoList{
             completed:false,
         };
         self.tasks.push(new_task);
+        println!("Task inserted with id {}", id.to_string());
         
     }
 
-    pub fn show_task(&self, id:i32)->Option<&Task>{
+    fn list_tasks(&self){
+        println!("Here's the list of tasks");
+        for task in &self.tasks{
+            println!("Task {} - Title: {} - State: {}", task.id.to_string(), task.title, task.completed.to_string())
+        }
+    }
+
+    fn show_task(&self, id:i32)->Option<&Task>{
        let task_to_show = self.tasks.iter().find(|task| task.id == id);
        task_to_show
     }
@@ -51,15 +58,27 @@ impl TodoList{
             None => println!("No task found with id {}", id.to_string()),
         }
     }
+
+    pub fn delete_task(&mut self, id:i32){
+        let task_to_delete_index = self.tasks.iter().position(|task| task.id == id);
+        match task_to_delete_index{
+            Some(index)=>{
+                self.tasks.remove(index);
+                println!("Task deleted");
+            },
+            None => println!("No task found with id {}",id.to_string()),
+        }
+    }
 }
 
 pub fn parse_option(num: i32)->Result<Choice, String>{
     match num {
         1 => Ok(Choice::AddTask),
-        2 => Ok(Choice::ShowTask),
-        3 => Ok(Choice::CompleteTask),
-        4 => Ok(Choice::DeleteTask),
-        5 => Ok(Choice::Quit),
+        2 => Ok(Choice::ListTasks),
+        3 => Ok(Choice::ShowTask),
+        4 => Ok(Choice::CompleteTask),
+        5 => Ok(Choice::DeleteTask),
+        6 => Ok(Choice::Quit),
         _ => Err("Not a valid option!".to_string())
     }
 }
@@ -71,6 +90,9 @@ pub fn start_option(list: &mut TodoList, option:Choice, details:Option<String>){
             Some(title)=>list.add_task(title),
             None => println!("Can't be empty!"),
         }
+       },
+       Choice::ListTasks =>{
+        list.list_tasks();
        },
        Choice::ShowTask => {
         match details {
@@ -103,8 +125,24 @@ pub fn start_option(list: &mut TodoList, option:Choice, details:Option<String>){
             None => println!("Id can't be empty"),
         }
        },
-       Choice::DeleteTask => delete_task(),
-       Choice::Quit => quit(),
+       Choice::DeleteTask => {
+            match details {
+                Some(str_id)=>{
+                    let id:i32 = match str_id.trim().parse(){
+                        Ok(num_id)=>num_id,
+                        Err(_)=>{
+                            println!("Error while parsing id!");
+                            return;
+                        }
+                    };
+                    list.delete_task(id);
+                },
+                None => println!("Id can't be empty"),
+            }
+       },
+       Choice::Quit => {
+        println!("Bye bye!");
+        std::process::exit(0)},
 
     }
 }
