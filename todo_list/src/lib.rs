@@ -1,3 +1,5 @@
+use core::num;
+
 use rand::{Rng, RngExt};
 pub enum Choice{
     AddTask,
@@ -29,9 +31,25 @@ impl TodoList{
             id,
             title,
             completed:false,
-        }
+        };
         self.tasks.push(new_task);
         
+    }
+
+    pub fn show_task(&self, id:i32)->Option<&Task>{
+       let task_to_show = self.tasks.iter().find(|task| task.id == id);
+       task_to_show
+    }
+
+    pub fn complete_task(&mut self, id:i32){
+        let task_to_complete = self.tasks.iter_mut().find(|task| task.id == id);
+        match task_to_complete{
+            Some(task_to_complete)=>{
+                task_to_complete.completed = true;
+                println!("Task {} set to completed", task_to_complete.title);
+            },
+            None => println!("No task found with id {}", id.to_string()),
+        }
     }
 }
 
@@ -54,8 +72,37 @@ pub fn start_option(list: &mut TodoList, option:Choice, details:Option<String>){
             None => println!("Can't be empty!"),
         }
        },
-       Choice::ShowTask => show_task(),
-       Choice::CompleteTask => complete_task(),
+       Choice::ShowTask => {
+        match details {
+            Some(str_id)=>{
+                let id: i32 = match str_id.trim().parse(){
+                    Ok(num_id)=> num_id,
+                    Err(_)=>{println!("Error while parsing id!");
+                    return;}
+                };
+                match  list.show_task(id){
+                    Some(task_to_show)=>println!("Il tuo task ha id:{}, titolo:{} ed stato:{}",task_to_show.id.to_string(),task_to_show.title,task_to_show.completed.to_string()),
+                    None => println!("No task found with id {}",id.to_string())
+                };
+            },
+            None => println!("Id can't be empty"),
+        }
+       },
+       Choice::CompleteTask => {
+        match details {
+            Some(str_id)=>{
+                let id: i32 = match str_id.trim().parse() {
+                    Ok(num_id)=>num_id,
+                    Err(_)=>{
+                        println!("Error while parsig id!");
+                        return;
+                    }
+                };
+                list.complete_task(id);
+            }
+            None => println!("Id can't be empty"),
+        }
+       },
        Choice::DeleteTask => delete_task(),
        Choice::Quit => quit(),
 
