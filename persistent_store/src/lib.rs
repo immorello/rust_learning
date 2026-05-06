@@ -22,7 +22,7 @@ pub fn initialize_program() -> Result<Store, String> {
     let mut empty_store = Store::new();
     let storage_already_exists: bool = check_storage_existance();
     if storage_already_exists {
-        match empty_store.read_from_file() {
+        match empty_store.load_from_file() {
             Ok(read_store) => {
                 empty_store = read_store;
             }
@@ -91,7 +91,7 @@ pub fn execute_command(
             store.list_values();
         }
         Command::Quit => {
-            match store.persist_to_file() {
+            match store.save_to_file() {
                 Ok(_) => {}
                 Err(error) => println!("{}", error.to_string()),
             };

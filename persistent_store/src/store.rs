@@ -25,7 +25,7 @@ impl Store {
     pub fn set_value(&mut self, new_key: String, new_value: Value) {
         self.data.insert(new_key.clone(), new_value);
         println!("Inserted value with key {}", new_key);
-        match self.persist_to_file() {
+        match self.save_to_file() {
             Ok(_) => {}
             Err(error) => println!("{}", error.to_string()),
         };
@@ -47,7 +47,7 @@ impl Store {
     pub fn delete_value(&mut self, key: &str) {
         match self.data.remove(key) {
             Some(_) => {
-                match self.persist_to_file() {
+                match self.save_to_file() {
                     Ok(_) => {}
                     Err(error) => println!("{}", error.to_string()),
                 };

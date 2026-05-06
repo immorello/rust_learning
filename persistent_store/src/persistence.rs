@@ -4,7 +4,7 @@ use crate::STORAGE_PATH;
 use std::fs;
 
 impl Store {
-    pub fn serialize(&self) -> Result<String, String> {
+    pub fn to_json(&self) -> Result<String, String> {
         let json_res = serde_json::to_string(&self);
         match json_res {
             Ok(json) => Ok(json),
@@ -12,7 +12,7 @@ impl Store {
         }
     }
 
-    pub fn deserialize(&self, store_string: &str) -> Result<Store, String>{
+    pub fn from_json(&self, store_string: &str) -> Result<Store, String>{
         let my_store = serde_json::from_str(store_string);
         match my_store {
             Ok(store) => Ok(store),
@@ -20,8 +20,8 @@ impl Store {
         }
     }
 
-    pub fn persist_to_file(&self) -> Result<(),String>{
-        let store_string = match self.serialize(){
+    pub fn save_to_file(&self) -> Result<(),String>{
+        let store_string = match self.to_json(){
             Ok(string)=>string,
             Err(error)=>return Err(error),
         };
@@ -38,10 +38,10 @@ impl Store {
         }
     }
 
-    pub fn read_from_file(&self) -> Result<Store, String> {
+    pub fn load_from_file(&self) -> Result<Store, String> {
         let file_to_read = fs::read_to_string(STORAGE_PATH);
         match file_to_read {
-            Ok(string_file) => self.deserialize(&string_file),
+            Ok(string_file) => self.from_json(&string_file),
             Err(error) => Err(error.to_string()),
         }
     }
