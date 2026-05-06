@@ -8,6 +8,20 @@ Build a small persistent key-value store for the terminal.
 
 This exercise extends the in-memory key-value store by making the data survive between program runs.
 
+## Evolution
+
+This project is intended to evolve in small internal versions instead of being replaced immediately by a separate exercise.
+
+Current and planned progression:
+
+1. `v0`: copied baseline from the in-memory key-value store
+2. `v1`: persistence with JSON save/load and full snapshot after each write
+3. `v2`: split the code into modules so storage logic, persistence, and terminal interaction are easier to follow
+4. `v3`: replace JSON persistence with a schema-based binary format such as Protocol Buffers
+5. `v4`: improve persistence strategy with better snapshot timing or an append-only log plus snapshots
+
+Git commits and tags should be used to mark these stages.
+
 ## What the program should do
 
 The program should:
@@ -105,6 +119,8 @@ For this exercise, the snapshot approach after every change is recommended becau
 
 The file format does not need to be advanced. It just needs to be readable and writable by your program.
 
+For the first working version, JSON with `serde` and `serde_json` is a good choice.
+
 ## Implementation requirements
 
 - use `HashMap<String, Value>` for the in-memory store
@@ -169,6 +185,8 @@ The exercise is complete when:
 - `clear`
 - choose the storage file path from the command line
 - store values using JSON with `serde`
+- reorganize the project into modules such as `store`, `persistence`, and `input`
+- replace JSON with Protocol Buffers in a later internal version
 - automated tests for save and load behavior
 - append-only log format instead of full snapshots
 

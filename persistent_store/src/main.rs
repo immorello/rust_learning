@@ -1,10 +1,4 @@
-use persistent_store::Command;
-use persistent_store::Value;
-use persistent_store::execute_command;
-use persistent_store::initialize_program;
-use persistent_store::insert_key;
-use persistent_store::insert_value;
-use persistent_store::parse_option;
+use persistent_store::{execute_command, initialize_program, insert_key, insert_value, parse_option, Value, Command};
 use std::io;
 
 fn main() {
