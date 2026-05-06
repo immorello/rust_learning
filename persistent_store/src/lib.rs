@@ -93,8 +93,18 @@ impl Store {
         self.data.get(key)
     }
 
-    fn delete_value(&mut self, key: &str) -> Option<Value> {
-        self.data.remove(key)
+    fn delete_value(&mut self, key: &str){
+        
+        match self.data.remove(key){
+            Some(_)=>{
+                self.persist_to_file();
+                println!("Deleted value with key {}", key);
+            },
+            None=>{
+                println!("Could not delete value with key {}", key);
+            }
+        }
+
     }
 
     fn list_values(&self) {
@@ -187,10 +197,7 @@ pub fn execute_command(
             None => println!("Key cannot be empty!"),
         },
         Command::Delete => match key {
-            Some(key) => match store.delete_value(&key) {
-                Some(_) => println!("Deleted value with key {}", key),
-                None => println!("Could not delete value with key {}", key),
-            },
+            Some(key) => store.delete_value(&key),
             None => println!("Key cannot be empty!"),
         },
         Command::List => {

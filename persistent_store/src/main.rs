@@ -1,7 +1,5 @@
 use persistent_store::Command;
-use persistent_store::Store;
 use persistent_store::Value;
-use persistent_store::check_storage_existance;
 use persistent_store::execute_command;
 use persistent_store::initialize_program;
 use persistent_store::insert_key;
