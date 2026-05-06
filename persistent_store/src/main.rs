@@ -1,15 +1,22 @@
 use persistent_store::Command;
 use persistent_store::Store;
 use persistent_store::Value;
+use persistent_store::check_storage_existance;
 use persistent_store::execute_command;
+use persistent_store::initialize_program;
 use persistent_store::insert_key;
 use persistent_store::insert_value;
 use persistent_store::parse_option;
 use std::io;
 
 fn main() {
-    println!("Welcome to the key-value store written in Rust\n");
-    let mut new_store = Store::new();
+    let mut new_store = match initialize_program() {
+        Ok(store) => store,
+        Err(err) => {
+            println!("Inizitialization error: {}", err);
+            return;
+        },
+    };
     loop {
         println!("Choose the command:\n");
         println!("1:set\n2:get\n3:delete\n4:list\n5:quit\n");

@@ -1,7 +1,9 @@
-use std::{collections::HashMap, fs::File};
-use std::io::{self, Read, Write};
+use std::{collections::HashMap};
+use std::io::{self, Write};
 use serde::{Serialize, Deserialize};
 use std::fs;
+use std::path::{Path};
+
 const STORAGE_PATH: &str = "./Storage/storage.json";
 pub enum Command {
     Set,
@@ -75,7 +77,7 @@ impl Store {
     fn set_value(&mut self, new_key: String, new_value: Value) {
         self.data.insert(new_key.clone(), new_value);
         println!("Inserted value with key {}", new_key);
-
+        self.persist_to_file();
         match self.data.get(&new_key) {
             Some(new_value) => match new_value {
                 Value::Integer(num) => println!("Value for item with key {}: {}\n", new_key, num),
@@ -110,6 +112,27 @@ impl Store {
             }
         }
     }
+}
+
+pub fn check_storage_existance()->bool{
+    let path = Path::new(STORAGE_PATH);
+    return path.exists()
+}
+
+pub fn initialize_program()->Result<Store,String>{
+    println!("Welcome to the key-value store written in Rust\n");
+    let mut empty_store = Store::new();
+    let storage_already_exists:bool = check_storage_existance();
+    if storage_already_exists {
+        match empty_store.read_from_file(){
+            Some(read_store)=>{
+                empty_store = read_store;
+            },
+            None=>return Err("Couldn't read the storage file".to_string()),
+        }
+    }
+    return Ok(empty_store)
+    
 }
 
 pub fn parse_value(input: &str) -> Value {
@@ -174,6 +197,7 @@ pub fn execute_command(
             store.list_values();
         }
         Command::Quit => {
+            store.persist_to_file();
             println!("Bye bye!");
             std::process::exit(0)
         }
