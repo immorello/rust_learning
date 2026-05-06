@@ -1,5 +1,5 @@
-use std::{collections::HashMap};
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
 pub const STORAGE_PATH: &str = "./Storage/storage.json";
 
@@ -16,7 +16,6 @@ pub struct Store {
 }
 
 impl Store {
-    
     pub fn new() -> Store {
         Store {
             data: HashMap::new(),
@@ -26,7 +25,10 @@ impl Store {
     pub fn set_value(&mut self, new_key: String, new_value: Value) {
         self.data.insert(new_key.clone(), new_value);
         println!("Inserted value with key {}", new_key);
-        self.persist_to_file();
+        match self.persist_to_file() {
+            Ok(_) => {}
+            Err(error) => println!("{}", error.to_string()),
+        };
         match self.data.get(&new_key) {
             Some(new_value) => match new_value {
                 Value::Integer(num) => println!("Value for item with key {}: {}\n", new_key, num),
@@ -42,18 +44,19 @@ impl Store {
         self.data.get(key)
     }
 
-    pub fn delete_value(&mut self, key: &str){
-        
-        match self.data.remove(key){
-            Some(_)=>{
-                self.persist_to_file();
+    pub fn delete_value(&mut self, key: &str) {
+        match self.data.remove(key) {
+            Some(_) => {
+                match self.persist_to_file() {
+                    Ok(_) => {}
+                    Err(error) => println!("{}", error.to_string()),
+                };
                 println!("Deleted value with key {}", key);
-            },
-            None=>{
+            }
+            None => {
                 println!("Could not delete value with key {}", key);
             }
         }
-
     }
 
     pub fn list_values(&self) {

@@ -1,9 +1,9 @@
-use std::path::{Path};
 use std::io;
-pub mod store;
+use std::path::Path;
 pub mod persistence;
+pub mod store;
 
-pub use crate::store::{Store, Value, STORAGE_PATH};
+pub use crate::store::{STORAGE_PATH, Store, Value};
 pub enum Command {
     Set,
     Get,
@@ -12,26 +12,24 @@ pub enum Command {
     Quit,
 }
 
-
-pub fn check_storage_existance()->bool{
+pub fn check_storage_existance() -> bool {
     let path = Path::new(STORAGE_PATH);
-    return path.exists()
+    return path.exists();
 }
 
-pub fn initialize_program()->Result<Store,String>{
+pub fn initialize_program() -> Result<Store, String> {
     println!("Welcome to the key-value store written in Rust\n");
     let mut empty_store = Store::new();
-    let storage_already_exists:bool = check_storage_existance();
+    let storage_already_exists: bool = check_storage_existance();
     if storage_already_exists {
-        match empty_store.read_from_file(){
-            Some(read_store)=>{
+        match empty_store.read_from_file() {
+            Ok(read_store) => {
                 empty_store = read_store;
-            },
-            None=>return Err("Couldn't read the storage file".to_string()),
+            }
+            Err(error) => return Err(error.to_string()),
         }
     }
-    return Ok(empty_store)
-    
+    return Ok(empty_store);
 }
 
 pub fn parse_value(input: &str) -> Value {
@@ -93,7 +91,10 @@ pub fn execute_command(
             store.list_values();
         }
         Command::Quit => {
-            store.persist_to_file();
+            match store.persist_to_file() {
+                Ok(_) => {}
+                Err(error) => println!("{}", error.to_string()),
+            };
             println!("Bye bye!");
             std::process::exit(0)
         }

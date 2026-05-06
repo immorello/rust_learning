@@ -4,45 +4,45 @@ use crate::STORAGE_PATH;
 use std::fs;
 
 impl Store {
-    pub fn serialize(&self) -> String {
+    pub fn serialize(&self) -> Result<String, String> {
         let json_res = serde_json::to_string(&self);
         match json_res {
-            Ok(json) => json,
-            Err(_) => "Could not serialize json".to_string(),
+            Ok(json) => Ok(json),
+            Err(error) => Err(error.to_string()),
         }
     }
 
-    pub fn deserialize(&self, store_string: &str) -> Option<Store> {
+    pub fn deserialize(&self, store_string: &str) -> Result<Store, String>{
         let my_store = serde_json::from_str(store_string);
         match my_store {
-            Ok(store) => store,
-            Err(_) => None,
+            Ok(store) => Ok(store),
+            Err(error) => Err(error.to_string()),
         }
     }
 
-    pub fn persist_to_file(&self) {
-        let store_string = self.serialize();
+    pub fn persist_to_file(&self) -> Result<(),String>{
+        let store_string = match self.serialize(){
+            Ok(string)=>string,
+            Err(error)=>return Err(error),
+        };
         let file = std::fs::File::create(STORAGE_PATH);
         match file {
             Ok(mut new_file) => {
                 let write_result = new_file.write_all(store_string.as_bytes());
                 match write_result {
-                    Ok(_) => println!("data persisted to file"),
-                    Err(_) => println!("Error while printing to file"),
+                    Ok(_) => Ok(println!("data persisted to file")),
+                    Err(error) => Err(error.to_string()),
                 }
             }
-            Err(_) => println!("Could not create the file"),
+            Err(error) => Err(error.to_string()),
         }
     }
 
-    pub fn read_from_file(&self) -> Option<Store> {
+    pub fn read_from_file(&self) -> Result<Store, String> {
         let file_to_read = fs::read_to_string(STORAGE_PATH);
         match file_to_read {
-            Ok(string_file) => {
-                let store = self.deserialize(&string_file);
-                store
-            }
-            Err(_) => None,
+            Ok(string_file) => self.deserialize(&string_file),
+            Err(error) => Err(error.to_string()),
         }
     }
 }
