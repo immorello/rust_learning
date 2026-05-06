@@ -1,7 +1,7 @@
 use crate::Store;
-use std::io::{Write};
 use crate::STORAGE_PATH;
 use std::fs;
+use std::io::Write;
 
 impl Store {
     pub fn to_json(&self) -> Result<String, String> {
@@ -12,7 +12,7 @@ impl Store {
         }
     }
 
-    pub fn from_json(&self, store_string: &str) -> Result<Store, String>{
+    pub fn from_json(&self, store_string: &str) -> Result<Store, String> {
         let my_store = serde_json::from_str(store_string);
         match my_store {
             Ok(store) => Ok(store),
@@ -20,10 +20,10 @@ impl Store {
         }
     }
 
-    pub fn save_to_file(&self) -> Result<(),String>{
-        let store_string = match self.to_json(){
-            Ok(string)=>string,
-            Err(error)=>return Err(error),
+    pub fn save_to_file(&self) -> Result<(), String> {
+        let store_string = match self.to_json() {
+            Ok(string) => string,
+            Err(error) => return Err(error),
         };
         let file = std::fs::File::create(STORAGE_PATH);
         match file {
