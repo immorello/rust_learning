@@ -14,52 +14,51 @@ The program should:
 
 1. start by showing the available commands
 2. stay alive in a loop
-3. read a command from the user
-4. parse the command
+3. let the user choose a command from a menu
+4. read the extra input required by that command
 5. execute the requested operation
-6. exit only when the user types `quit`
+6. exit only when the user chooses `quit`
 
 ## Recommended data structure
 
-Use a `HashMap<String, String>`.
+Use a `HashMap<String, Value>`.
 
 Recommended shape:
 
 ```rust
-struct KvStore {
-    data: HashMap<String, String>,
+enum Value {
+    Integer(i32),
+    Float(f64),
+    Text(String),
+    Boolean(bool),
+}
+
+struct Store {
+    data: HashMap<String, Value>,
 }
 ```
 
 ## Minimum required commands
 
-### `set <key> <value>`
+### `set`
 
-Store a key-value pair.
+Ask the user for:
 
-Example:
-
-```text
-set name Mario
-```
+- a key
+- a value
 
 If the key already exists, update the value.
 
-### `get <key>`
+The value should be parsed into one of the supported types:
 
-Return the value associated with a key.
+- integer
+- float
+- boolean
+- text
 
-Example:
+### `get`
 
-```text
-get name
-```
-
-Expected output:
-
-```text
-Mario
-```
+Ask the user for a key and return the value associated with it.
 
 If the key does not exist:
 
@@ -67,9 +66,9 @@ If the key does not exist:
 Key not found
 ```
 
-### `delete <key>`
+### `delete`
 
-Remove the key and its value.
+Ask the user for a key and remove the key-value pair.
 
 ### `list`
 
@@ -81,29 +80,13 @@ If the store is empty:
 Store is empty
 ```
 
-### `exists <key>`
-
-Tell whether a key exists.
-
-Output:
-
-```text
-true
-```
-
-or:
-
-```text
-false
-```
-
 ### `quit`
 
 Exit the program.
 
 ## Implementation requirements
 
-- use `HashMap<String, String>`
+- use `HashMap<String, Value>`
 - separate `main.rs` and `lib.rs`
 - do not panic on invalid input
 - handle missing keys gracefully
@@ -115,19 +98,22 @@ Exit the program.
 
 - main loop
 - input reading
-- command parsing
+- menu selection parsing
 - calls into the store methods
 
 ### In `lib.rs`
 
-- `KvStore`
-- methods such as `set`, `get`, `delete`, `list`, and `exists`
+- `Store`
+- `Value`
+- methods such as `set`, `get`, `delete`, and `list`
+- helper functions for input parsing
 
 ## Rust concepts practiced
 
 - `HashMap`
 - `struct`
 - `impl`
+- custom `enum` for typed values
 - `Option`
 - `Result`
 - string parsing
@@ -141,15 +127,15 @@ The exercise is complete when:
 
 1. the program starts correctly
 2. it supports at least `set`, `get`, `delete`, `list`, and `quit`
-3. it uses `HashMap<String, String>` as in-memory storage
+3. it uses `HashMap<String, Value>` as in-memory storage
 4. it returns to the prompt after each command
 5. it handles invalid input without crashing
 
 ## Optional bonus features
 
+- `exists`
 - `count`
 - `clear`
-- support for values containing spaces
 - automated tests
 - file persistence in a later version
 
@@ -162,4 +148,5 @@ This exercise practices the core building blocks of a simple database engine:
 - update
 - delete
 - in-memory state
+- value typing
 - command parsing
