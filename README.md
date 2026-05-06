@@ -73,17 +73,29 @@ Why it matters:
 
 This is the first exercise that directly resembles a database core.
 
-## Likely next steps after the key-value store
+### 4. Persistent Store
 
-Once the in-memory key-value store is complete, the next exercises should move toward:
+Focus:
 
-1. file persistence
-2. append-only logs
-3. loading state at startup
-4. document-like values instead of plain strings
-5. indexing ideas
-6. concurrency and synchronization
-7. exposing the engine through a CLI or HTTP interface
+- file I/O with `std::fs`
+- saving state to disk
+- loading state at startup
+- `Result`-based error handling for files
+- separating business logic from terminal interaction
+
+Why it matters:
+
+This project turns the in-memory store into something closer to a real system by making data survive across program runs.
+
+## Likely next steps after the persistent store
+
+Once the persistent key-value store is complete, the next exercises should move toward:
+
+1. append-only logs
+2. document-like values instead of plain strings
+3. indexing ideas
+4. concurrency and synchronization
+5. exposing the engine through a CLI or HTTP interface
 
 ## Repository purpose
 

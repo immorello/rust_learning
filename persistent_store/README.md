@@ -1,0 +1,183 @@
+# Persistent Store
+
+Fourth Rust exercise in this repository.
+
+## Goal
+
+Build a small persistent key-value store for the terminal.
+
+This exercise extends the in-memory key-value store by making the data survive between program runs.
+
+## What the program should do
+
+The program should:
+
+1. start by loading previously saved data from disk
+2. show the available commands
+3. stay alive in a loop
+4. let the user choose a command from a menu
+5. read the extra input required by that command
+6. execute the requested operation
+7. save changes to disk
+8. exit only when the user chooses `quit`
+
+## Recommended data structure
+
+Use a `HashMap<String, Value>` inside a `Store`.
+
+Recommended shape:
+
+```rust
+enum Value {
+    Integer(i32),
+    Float(f64),
+    Text(String),
+    Boolean(bool),
+}
+
+struct Store {
+    data: HashMap<String, Value>,
+}
+```
+
+Keep the in-memory representation simple. The new part of this exercise is persistence, not a more advanced data model.
+
+## Minimum required commands
+
+### `set`
+
+Ask the user for:
+
+- a key
+- a value
+
+If the key already exists, update the value.
+
+The value should be parsed into one of the supported types:
+
+- integer
+- float
+- boolean
+- text
+
+After updating the store, persist the new state to disk.
+
+### `get`
+
+Ask the user for a key and return the value associated with it.
+
+If the key does not exist:
+
+```text
+Key not found
+```
+
+### `delete`
+
+Ask the user for a key and remove the key-value pair.
+
+If the key exists, persist the updated state to disk.
+
+### `list`
+
+Print all stored key-value pairs.
+
+If the store is empty:
+
+```text
+Store is empty
+```
+
+### `quit`
+
+Exit the program.
+
+## Persistence requirements
+
+The program must save data to a file and load it again at startup.
+
+You can choose one of these approaches:
+
+1. save the whole store as a snapshot after every change
+2. save the whole store only on `quit`
+
+For this exercise, the snapshot approach after every change is recommended because it is simpler and safer.
+
+The file format does not need to be advanced. It just needs to be readable and writable by your program.
+
+## Implementation requirements
+
+- use `HashMap<String, Value>` for the in-memory store
+- separate `main.rs` and `lib.rs`
+- do not panic on invalid input
+- handle missing keys gracefully
+- handle missing files gracefully on first startup
+- handle file read and write errors with `Result`
+- keep the program alive in a loop
+- load data from disk when the program starts
+- save data to disk after modifying commands such as `set` and `delete`
+
+## Recommended organization
+
+### In `main.rs`
+
+- main loop
+- input reading
+- menu selection parsing
+- calls into the store methods
+- user-facing error messages
+
+### In `lib.rs`
+
+- `Store`
+- `Value`
+- methods such as `set`, `get`, `delete`, and `list`
+- methods or helper functions for saving and loading
+- parsing helpers
+
+## Rust concepts practiced
+
+- `HashMap`
+- `struct`
+- `impl`
+- custom `enum` for typed values
+- `Option`
+- `Result`
+- file I/O with `std::fs`
+- serialization format design
+- string parsing
+- ownership and borrowing
+- error propagation
+
+## Definition of done
+
+The exercise is complete when:
+
+1. the program starts correctly
+2. it supports at least `set`, `get`, `delete`, `list`, and `quit`
+3. it uses `HashMap<String, Value>` as in-memory storage
+4. it loads previous data from a file when starting
+5. it saves changes to a file
+6. it returns to the prompt after each command
+7. it handles invalid input without crashing
+8. it handles missing or empty storage files gracefully
+
+## Optional bonus features
+
+- `exists`
+- `count`
+- `clear`
+- choose the storage file path from the command line
+- store values using JSON with `serde`
+- automated tests for save and load behavior
+- append-only log format instead of full snapshots
+
+## Why this matters
+
+This exercise moves your project one step closer to a real database engine:
+
+- state survives program restarts
+- disk persistence becomes part of the design
+- file errors become part of normal error handling
+- loading and saving state introduces database lifecycle thinking
+- the store begins to behave more like a real system than a temporary program
