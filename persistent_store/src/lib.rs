@@ -2,6 +2,12 @@ use std::io;
 use std::path::Path;
 pub mod persistence;
 pub mod store;
+pub mod proto {
+    include!(concat!(env!("OUT_DIR"), "/persistent_store.rs"));
+}
+
+#[cfg(test)]
+mod persistence_test;
 
 pub use crate::store::{STORAGE_PATH, Store, Value};
 pub enum Command {

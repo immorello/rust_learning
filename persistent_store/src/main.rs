@@ -1,4 +1,6 @@
-use persistent_store::{execute_command, initialize_program, insert_key, insert_value, parse_option, Value, Command};
+use persistent_store::{
+    Command, Value, execute_command, initialize_program, insert_key, insert_value, parse_option,
+};
 use std::io;
 
 fn main() {
@@ -7,7 +9,7 @@ fn main() {
         Err(err) => {
             println!("Inizitialization error: {}", err);
             return;
-        },
+        }
     };
     loop {
         println!("Choose the command:\n");

@@ -1,16 +1,14 @@
-use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-pub const STORAGE_PATH: &str = "./Storage/storage.json";
+pub const STORAGE_PATH: &str = "./Storage/storage.pb";
 
-#[derive(Serialize, Deserialize)]
 pub enum Value {
     Integer(i32),
     Float(f64),
     Text(String),
     Boolean(bool),
 }
-#[derive(Serialize, Deserialize)]
+
 pub struct Store {
     data: HashMap<String, Value>,
 }
@@ -20,6 +18,14 @@ impl Store {
         Store {
             data: HashMap::new(),
         }
+    }
+
+    pub fn get_data(&self) -> &HashMap<String, Value> {
+        &self.data
+    }
+
+    pub fn from_data(data: HashMap<String, Value>) -> Store {
+        Store { data }
     }
 
     pub fn set_value(&mut self, new_key: String, new_value: Value) {
