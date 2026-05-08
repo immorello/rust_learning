@@ -150,3 +150,9 @@ This exercise practices the core building blocks of a simple database engine:
 - in-memory state
 - value typing
 - command parsing
+
+## License
+
+This subproject is licensed under the Apache License, Version 2.0.
+Redistributions and derivative works must preserve the `NOTICE`
+attribution file as required by the license.

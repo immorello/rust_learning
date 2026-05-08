@@ -48,3 +48,9 @@ Build a terminal todo list that stays alive in a loop and manages tasks in memor
 - save data to a file
 - clean up error messages
 - separate terminal I/O from business logic more strictly
+
+## License
+
+This subproject is licensed under the Apache License, Version 2.0.
+Redistributions and derivative works must preserve the `NOTICE`
+attribution file as required by the license.

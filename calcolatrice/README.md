@@ -43,3 +43,9 @@ Build a terminal calculator that:
 - allow multiple calculations in a loop
 - improve error messages
 - support more complex expressions
+
+## License
+
+This subproject is licensed under the Apache License, Version 2.0.
+Redistributions and derivative works must preserve the `NOTICE`
+attribution file as required by the license.

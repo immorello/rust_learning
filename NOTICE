@@ -1,0 +1,16 @@
+Rust Learning Path
+Copyright 2026 Francesco Imovilli
+
+This repository and its subprojects were originally created by
+Francesco Imovilli as part of a Rust learning path toward a key-value
+database engine.
+
+This product includes the following subprojects:
+
+- calcolatrice
+- todo_list
+- key_value_store
+- persistent_store
+
+Redistributions and derivative works must preserve this attribution
+notice as required by Section 4(d) of the Apache License, Version 2.0.

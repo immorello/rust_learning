@@ -109,3 +109,10 @@ Each project folder should keep its own `README.md` describing:
 - the goal of the exercise
 - the concepts being practiced
 - possible next improvements
+
+## License
+
+This repository and its subprojects are licensed under the Apache License,
+Version 2.0. See `LICENSE` for the license terms and `NOTICE` for the
+attribution notice that must be preserved in redistributions and derivative
+works as required by the license.
