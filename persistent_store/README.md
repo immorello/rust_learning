@@ -199,3 +199,9 @@ This exercise moves your project one step closer to a real database engine:
 - file errors become part of normal error handling
 - loading and saving state introduces database lifecycle thinking
 - the store begins to behave more like a real system than a temporary program
+
+## License
+
+This subproject is licensed under the Apache License, Version 2.0.
+Redistributions and derivative works must preserve the `NOTICE`
+attribution file as required by the license.
