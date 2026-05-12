@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
     use crate::proto::StoreSnapshot;
-    use crate::{Store, Value};
+    use crate::store::{Store, Value};
     use prost::Message;
     use std::collections::HashMap;
 

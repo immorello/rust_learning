@@ -1,7 +1,8 @@
-use crate::STORAGE_PATH;
+use crate::app::STORAGE_PATH;
+use crate::errors::AppError;
 use crate::proto::value_message::Kind;
 use crate::proto::{StoreSnapshot, ValueMessage};
-use crate::{Store, Value};
+use crate::store::{Store, Value};
 use prost::Message;
 use std::collections::HashMap;
 use std::fs;
@@ -24,13 +25,13 @@ impl Store {
         }
     }
 
-    fn proto_to_value(proto: &ValueMessage) -> Result<Value, String> {
+    fn proto_to_value(proto: &ValueMessage) -> Result<Value, AppError> {
         match proto.kind.as_ref() {
             Some(Kind::Integer(n)) => Ok(Value::Integer(*n)),
             Some(Kind::Float(n)) => Ok(Value::Float(*n)),
             Some(Kind::Text(s)) => Ok(Value::Text(s.clone())),
             Some(Kind::Boolean(b)) => Ok(Value::Boolean(*b)),
-            None => Err("Type of value not covered".to_string()),
+            None => Err(AppError::IoError("Type of value non covered".to_string())),
         }
     }
 
@@ -43,8 +44,8 @@ impl Store {
         StoreSnapshot { data }
     }
 
-    pub(crate) fn proto_to_store(proto_store: StoreSnapshot) -> Result<Store, String> {
-        let data: Result<HashMap<String, Value>, String> = proto_store
+    pub(crate) fn proto_to_store(proto_store: StoreSnapshot) -> Result<Store, AppError> {
+        let data: Result<HashMap<String, Value>, AppError> = proto_store
             .data
             .into_iter()
             .map(|(key, value_message)| {
@@ -63,11 +64,11 @@ impl Store {
         Ok(())
     }
 
-    pub fn load_from_file(&self) -> Result<Store, String> {
-        let bytes = fs::read(STORAGE_PATH).map_err(|error| error.to_string())?;
+    pub fn load_from_file(&self) -> Result<Store, AppError> {
+        let bytes = fs::read(STORAGE_PATH).map_err(|error| AppError::IoError(error.to_string()))?;
 
         let proto_store =
-            StoreSnapshot::decode(bytes.as_slice()).map_err(|error| error.to_string())?;
+            StoreSnapshot::decode(bytes.as_slice()).map_err(|error| AppError::DecodeError(error.to_string()))?;
         Store::proto_to_store(proto_store)
     }
 }
