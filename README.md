@@ -82,6 +82,8 @@ Focus:
 - loading state at startup
 - `Result`-based error handling for files
 - separating business logic from terminal interaction
+- modularization
+- schema-based binary persistence with Protocol Buffers
 
 Why it matters:
 
@@ -96,6 +98,20 @@ Once the persistent key-value store is complete, the next exercises should move 
 3. indexing ideas
 4. concurrency and synchronization
 5. exposing the engine through a CLI or HTTP interface
+
+## After The Learning Path
+
+Once the persistent store feels stable, it makes sense to start a separate repository for a more ambitious database project instead of stretching the learning exercises too far.
+
+At this point, the guided Rust learning path in this repository can be considered complete at its intended scope.
+
+A good next project would be a small Rust database inspired by systems such as DynamoDB, while keeping the scope intentionally reduced at first:
+
+- table-like logical organization
+- primary-key based reads and writes
+- typed attributes or document-like values
+- binary persistence and recovery
+- later, query patterns, indexing, and replication ideas
 
 ## Repository purpose
 
