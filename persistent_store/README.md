@@ -16,11 +16,22 @@ Current and planned progression:
 
 1. `v0`: copied baseline from the in-memory key-value store
 2. `v1`: persistence with JSON save/load and full snapshot after each write
-3. `v2`: split the code into modules so storage logic, persistence, and terminal interaction are easier to follow
-4. `v3`: replace JSON persistence with a schema-based binary format such as Protocol Buffers
+3. `v2`: split the code into modules so storage logic, persistence, application orchestration, and terminal interaction are easier to follow
+4. `v3`: replace JSON persistence with a Protocol Buffers binary snapshot format
 5. `v4`: improve persistence strategy with better snapshot timing or an append-only log plus snapshots
 
 Git commits and tags should be used to mark these stages.
+
+## Current Status
+
+The current implementation now includes:
+
+- modular separation between `store`, `persistence`, `app`, `cli`, and `errors`
+- full snapshot persistence using Protocol Buffers
+- loading state at startup and saving after write operations
+- a protobuf roundtrip test that checks conversion between internal Rust types and persisted binary data
+
+This exercise has reached its intended learning milestone and can be considered complete for the Rust learning path.
 
 ## What the program should do
 
@@ -117,14 +128,14 @@ You can choose one of these approaches:
 
 For this exercise, the snapshot approach after every change is recommended because it is simpler and safer.
 
-The file format does not need to be advanced. It just needs to be readable and writable by your program.
+The file format does not need to be advanced at first. A simple text or JSON format is a good starting point.
 
-For the first working version, JSON with `serde` and `serde_json` is a good choice.
+In the current version of this exercise, persistence has already been upgraded to Protocol Buffers to practice schema-based binary serialization.
 
 ## Implementation requirements
 
 - use `HashMap<String, Value>` for the in-memory store
-- separate `main.rs` and `lib.rs`
+- separate responsibilities into modules instead of keeping everything in one file
 - do not panic on invalid input
 - handle missing keys gracefully
 - handle missing files gracefully on first startup
@@ -145,11 +156,29 @@ For the first working version, JSON with `serde` and `serde_json` is a good choi
 
 ### In `lib.rs`
 
+- top-level module wiring
+- protobuf generated module inclusion
+
+### In `store.rs`
+
 - `Store`
 - `Value`
 - methods such as `set`, `get`, `delete`, and `list`
-- methods or helper functions for saving and loading
-- parsing helpers
+
+### In `persistence.rs`
+
+- conversions between internal Rust types and protobuf messages
+- methods for saving and loading
+
+### In `app.rs`
+
+- application-level orchestration between CLI and store
+
+### In `cli.rs`
+
+- input reading
+- command selection
+- user-facing output and error printing
 
 ## Rust concepts practiced
 
@@ -160,7 +189,8 @@ For the first working version, JSON with `serde` and `serde_json` is a good choi
 - `Option`
 - `Result`
 - file I/O with `std::fs`
-- serialization format design
+- schema-based serialization with Protocol Buffers
+- module organization
 - string parsing
 - ownership and borrowing
 - error propagation
@@ -177,6 +207,7 @@ The exercise is complete when:
 6. it returns to the prompt after each command
 7. it handles invalid input without crashing
 8. it handles missing or empty storage files gracefully
+9. it successfully roundtrips data through protobuf encoding and decoding
 
 ## Optional bonus features
 
@@ -184,11 +215,9 @@ The exercise is complete when:
 - `count`
 - `clear`
 - choose the storage file path from the command line
-- store values using JSON with `serde`
-- reorganize the project into modules such as `store`, `persistence`, and `input`
-- replace JSON with Protocol Buffers in a later internal version
 - automated tests for save and load behavior
 - append-only log format instead of full snapshots
+- richer application-level commands and responses
 
 ## Why this matters
 
@@ -198,6 +227,7 @@ This exercise moves your project one step closer to a real database engine:
 - disk persistence becomes part of the design
 - file errors become part of normal error handling
 - loading and saving state introduces database lifecycle thinking
+- schema-based serialization introduces a more realistic storage boundary
 - the store begins to behave more like a real system than a temporary program
 
 ## License

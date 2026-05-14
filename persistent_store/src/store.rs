@@ -1,5 +1,7 @@
 use std::collections::HashMap;
 
+use crate::errors::AppError;
+
 pub const STORAGE_PATH: &str = "./Storage/storage.pb";
 
 pub enum Value {
@@ -28,21 +30,15 @@ impl Store {
         Store { data }
     }
 
-    pub fn set_value(&mut self, new_key: String, new_value: Value) {
+    pub fn set_value(&mut self, new_key: String, new_value: Value) -> Result<String, AppError>{
         self.data.insert(new_key.clone(), new_value);
-        println!("Inserted value with key {}", new_key);
         match self.save_to_file() {
-            Ok(_) => {}
-            Err(error) => println!("{}", error.to_string()),
-        };
-        match self.data.get(&new_key) {
-            Some(new_value) => match new_value {
-                Value::Integer(num) => println!("Value for item with key {}: {}\n", new_key, num),
-                Value::Float(num) => println!("Value for item with key {}: {}\n", new_key, num),
-                Value::Text(txt) => println!("Value for item with key {}: {}\n", new_key, txt),
-                Value::Boolean(bool) => println!("Value for item with key {}: {}\n", new_key, bool),
+            Ok(_) => {
+                Ok(format!("Inserted value with key {}", new_key))
+            }
+            Err(error) => {
+                return Err(AppError::IoError(error));
             },
-            None => println!("Recently inserted value not found!"),
         }
     }
 
@@ -50,34 +46,37 @@ impl Store {
         self.data.get(key)
     }
 
-    pub fn delete_value(&mut self, key: &str) {
+    pub fn delete_value(&mut self, key: &str) -> Result<String, AppError>{
         match self.data.remove(key) {
             Some(_) => {
                 match self.save_to_file() {
-                    Ok(_) => {}
-                    Err(error) => println!("{}", error.to_string()),
+                    Ok(_) => {
+                        return Ok(format!("Deleted value with key {}", key));
+                    }
+                    Err(error) => return Err(AppError::InternalError(error)),
                 };
-                println!("Deleted value with key {}", key);
+                
             }
             None => {
-                println!("Could not delete value with key {}", key);
+                return Err(AppError::KeyNotFound(format!("Could not delete value with key {}", key)));
             }
         }
     }
 
-    pub fn list_values(&self) {
+    pub fn list_values(&self) -> Result<String,AppError>{
         if self.data.is_empty() {
-            println!("Store is empty");
-            return;
+            return Err(AppError::InternalError("Store is empty".to_string()))
         }
-        println!("Here's the complete list of items in the store:\n");
+        let mut result:String = "Here's the complete list of items in the store:\n".to_string();
         for (key, value) in &self.data {
-            match value {
-                Value::Integer(num) => println!("Value for item with key {}: {}\n", key, num),
-                Value::Float(num) => println!("Value for item with key {}: {}\n", key, num),
-                Value::Text(txt) => println!("Value for item with key {}: {}\n", key, txt),
-                Value::Boolean(bool) => println!("Value for item with key {}: {}\n", key, bool),
-            }
+            let line = match value {
+                Value::Integer(num) => format!("Value for item with key {}: {}\n", key, num),
+                Value::Float(num) => format!("Value for item with key {}: {}\n", key, num),
+                Value::Text(txt) => format!("Value for item with key {}: {}\n", key, txt),
+                Value::Boolean(bool) => format!("Value for item with key {}: {}\n", key, bool),
+            };
+            result.push_str(&line);
         }
+        Ok(result)
     }
 }

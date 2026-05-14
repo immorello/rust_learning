@@ -21,8 +21,10 @@ mod tests {
         let decoded_proto =
             StoreSnapshot::decode(bytes.as_slice()).expect("Should decode protobuf bytes");
 
-        let decoded_store =
-            Store::proto_to_store(decoded_proto).expect("Should convert proto store to Store");
+        let decoded_store = match Store::proto_to_store(decoded_proto) {
+            Ok(store) => store,
+            Err(_) => panic!("Should convert proto store to Store"),
+        };
 
         match decoded_store.get_value("age") {
             Some(Value::Integer(n)) => assert_eq!(*n, 30),

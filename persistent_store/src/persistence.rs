@@ -1,4 +1,4 @@
-use crate::app::STORAGE_PATH;
+use crate::store::STORAGE_PATH;
 use crate::errors::AppError;
 use crate::proto::value_message::Kind;
 use crate::proto::{StoreSnapshot, ValueMessage};
@@ -56,12 +56,11 @@ impl Store {
         Ok(Store::from_data(data?))
     }
 
-    pub fn save_to_file(&self) -> Result<(), String> {
+    pub fn save_to_file(&self) -> Result<String, String> {
         let proto_store = self.store_to_proto_store();
         let bytes = proto_store.encode_to_vec();
         fs::write(STORAGE_PATH, bytes).map_err(|error| error.to_string())?;
-        println!("data persisted to file");
-        Ok(())
+        Ok("Data persisted to file".to_string())
     }
 
     pub fn load_from_file(&self) -> Result<Store, AppError> {

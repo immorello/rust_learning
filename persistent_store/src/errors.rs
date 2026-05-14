@@ -4,4 +4,5 @@ pub enum AppError{
     InvalidCommand,
     InvalidInput(String),
     KeyNotFound(String),
+    InternalError(String),
 }
